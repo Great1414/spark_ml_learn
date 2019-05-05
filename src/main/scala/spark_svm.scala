@@ -1,9 +1,11 @@
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.ml.Pipeline
+import org.apache.spark.ml.PipelineModel
 import org.apache.spark.ml.feature._
-import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, MulticlassClassificationEvaluator}
+import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.ml.feature.PCA
 import org.apache.spark.ml.classification.LinearSVC
+
 import org.apache.spark.sql.SparkSession
 
 object spark_svm {
@@ -43,7 +45,7 @@ object spark_svm {
     data.show(5)
 
 //    划分数据集
-    val Array(trainData, testData) = pcadata.randomSplit(Array(0.5, 0.5), seed = 20)
+    val Array(trainData, testData) = pcadata.randomSplit(Array(0.7, 0.3), seed = 20)
     trainData.count()
 
 //    创建svm
@@ -57,6 +59,9 @@ object spark_svm {
 //    训练svc
 //    val lsvcmodel = lsvc.fit(trainData)
     val lsvcmodel = pipeline.fit(trainData)
+//      保存和加载model
+//      lsvcmodel.save("./model/spark_svc.model")
+//      val lsvcmodel = PipelineModel.load("./model/spark_svc.model")
 
 //    验证精度
     val res = lsvcmodel.transform(testData).select("prediction","label")
